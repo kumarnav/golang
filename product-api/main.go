@@ -35,7 +35,7 @@ func main() {
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 	}
 
-	// start the server
+	// start the server test
 	go func() {
 		l.Println("Starting server on port 9090")
 
