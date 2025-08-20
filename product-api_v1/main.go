@@ -8,11 +8,13 @@ import (
 	"os/signal"
 	"product-api/handlers"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
+//var  := env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
+
 func main() {
+
+	//	env.Parse()
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
@@ -20,24 +22,12 @@ func main() {
 	ph := handlers.NewProducts(l)
 
 	// create a new serve mux and register the handlers
-	sm := mux.NewRouter()
-
-	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", ph.GetProducts)
-
-	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
-	putRouter.Use(ph.MiddlewareValidateProduct)
-
-	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", ph.AddProduct)
-	postRouter.Use(ph.MiddlewareValidateProduct)
-
-	//sm.Handle("/products", ph)
+	sm := http.NewServeMux()
+	sm.Handle("/", ph)
 
 	// create a new server
 	s := http.Server{
-		Addr:         ":9090",           // configure the bind address
+		Addr:         ":9091",           // configure the bind address
 		Handler:      sm,                // set the default handler
 		ErrorLog:     l,                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
@@ -45,7 +35,7 @@ func main() {
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 	}
 
-	// start the server
+	// start the server test
 	go func() {
 		l.Println("Starting server on port 9090")
 

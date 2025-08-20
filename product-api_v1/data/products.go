@@ -19,11 +19,6 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-func (p *Product) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(p)
-}
-
 // Products is a collection of Product
 type Products []*Product
 
@@ -38,13 +33,22 @@ func (p *Products) ToJSON(w io.Writer) error {
 	return e.Encode(p)
 }
 
+func (p *Product) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(p)
+}
+
 // GetProducts returns a list of products
 func GetProducts() Products {
 	return productList
 }
 
+func GetId() int {
+	id := len(productList) + 1
+	return id
+}
 func AddProduct(p *Product) {
-	p.ID = getNextID()
+	p.ID = GetId()
 	productList = append(productList, p)
 }
 
@@ -53,10 +57,8 @@ func UpdateProduct(id int, p *Product) error {
 	if err != nil {
 		return err
 	}
-
 	p.ID = id
 	productList[pos] = p
-
 	return nil
 }
 
@@ -68,13 +70,7 @@ func findProduct(id int) (*Product, int, error) {
 			return p, i, nil
 		}
 	}
-
 	return nil, -1, ErrProductNotFound
-}
-
-func getNextID() int {
-	lp := productList[len(productList)-1]
-	return lp.ID + 1
 }
 
 // productList is a hard coded list of products for this
